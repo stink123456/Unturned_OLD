@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="mysql-connector-java-5.1.33-bin.jar"/>
 	<classpathentry kind="lib" path="C:/Users/too/Downloads/MCCore (5).jar"/>
 	<classpathentry kind="lib" path="C:/Users/too/Downloads/SQLManager (3).jar"/>
+	<classpathentry kind="lib" path="C:/Users/too/Downloads/citizens-2.0.13-SNAPSHOT (5).jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

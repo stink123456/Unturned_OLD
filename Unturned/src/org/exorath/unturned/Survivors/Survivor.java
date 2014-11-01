@@ -1,8 +1,11 @@
 package org.exorath.unturned.Survivors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.exorath.unturned.Main;
+import org.exorath.unturned.libraries.SpawnArea;
 
-public class Surviver {
+public class Survivor {
 
 	private Player player;
 	
@@ -17,6 +20,7 @@ public class Surviver {
 	private final static int MAXSTAMINA = 100;
 	
 	//skills
+	private int experience = 0;
 	private int skillSurvival = 0;
 	private int skillEndurance = 0;
 	private int skillSneakyBeaky = 0;
@@ -24,8 +28,26 @@ public class Surviver {
 	private int skillWarrior = 0;
 	private int skillOutdoors = 0;
 	private int skillCraftsman = 0;
-	public Surviver(Player player){
+	
+	private int sound = 30;
+	//current area:
+	
+	private SpawnArea currentArea = null;
+	public Survivor(Player player){
 		this.player = player;
+		for(SpawnArea area: Main.getSpawnManager().getSpawnAreas()){
+			Bukkit.broadcastMessage("Area: " + area.toString());
+			Bukkit.broadcastMessage("Location: " + player.getLocation().toString());
+			Bukkit.broadcastMessage("Sphere: " + area.getSphere().toString());
+			Bukkit.broadcastMessage("Middle: " + area.getSphere().getCenter());
+			if(area.getSphere().contains(player.getLocation())){
+				currentArea = area;
+				if(area.getEnterMessage() != null){
+				player.sendMessage(area.getEnterMessage());
+				}
+				break;
+			}
+		}
 	}
 	public Player getPlayer() {
 		return player;
@@ -38,12 +60,14 @@ public class Surviver {
 	}
 	public void setThirst(int thirst) {
 		this.thirst = thirst;
+		updateThirst();
 	}
 	public int getHunger() {
 		return hunger;
 	}
 	public void setHunger(int hunger) {
 		this.hunger = hunger;
+		updateHunger();
 	}
 	public int getStamina() {
 		return stamina;
@@ -98,5 +122,42 @@ public class Surviver {
 	}
 	public void setBleeding(boolean bleeding) {
 		this.bleeding = bleeding;
+	}
+	public int getExperience() {
+		return experience;
+	}
+	public void setExp(int experience) {
+		this.experience = experience;
+		updateExp();
+	}	
+	public void updateHunger(){
+		getPlayer().setFoodLevel(getHunger()*20/100);
+	}
+	public void updateThirst(){
+		getPlayer().setExp(getHunger()/100);
+	}
+	public void updateExp(){
+		getPlayer().setLevel(getExperience());
+	}
+	public void addExp(int exp){
+		experience += exp;
+		updateExp();
+	}
+	public int getSound() {
+		return sound;
+	}
+	public void setSound(int sound) {
+		this.sound = sound;
+	}
+	public SpawnArea getCurrentArea() {
+		return currentArea;
+	}
+	public void setCurrentArea(SpawnArea currentArea) {
+		if(currentArea != this.currentArea){
+			this.currentArea = currentArea;
+			if(currentArea.getEnterMessage() != null){
+				player.sendMessage(currentArea.getEnterMessage());
+			}
+		}
 	}
 }

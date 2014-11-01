@@ -2,4 +2,4 @@ name: Unturned
 main: org.exorath.unturned.Main
 version: 1.0
 author: Toon Sevrin
-depend: [MCCore, SQLManager]
+depend: [MCCore, SQLManager,Citizens]

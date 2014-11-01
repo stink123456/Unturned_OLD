@@ -7,12 +7,10 @@ import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.exorath.unturned.Main;
-import org.exorath.unturned.Survivors.Surviver;
+import org.exorath.unturned.Survivors.Survivor;
 import org.exorath.unturned.libraries.InventorySerializer;
 
 import com.rit.sucy.sql.ColumnType;
@@ -23,7 +21,7 @@ import com.sucy.sql.SQLManager;
 public class SavingManager implements Listener{
 	private SQLTable table;
 	private Main main;
-	private HashMap<Player,Surviver> survivers= new HashMap<Player,Surviver>();
+	private HashMap<Player,Survivor> survivors= new HashMap<Player,Survivor>();
 	private HashMap<Player,String> playersInvs= new HashMap<Player,String>();
 	
 	public SavingManager(Main main) {
@@ -43,6 +41,8 @@ public class SavingManager implements Listener{
 		table.createColumn("bleeding", ColumnType.INT);
 		//if(!table.columnExists("inventory"))
 		table.createColumn("inventory", ColumnType.STRING_8000);
+		//if(!table.columnExists("experience"))
+				table.createColumn("experience", ColumnType.INT);
 		//if(!table.columnExists("skillSurvival"))
 		table.createColumn("skillSurvival", ColumnType.INT);
 		//if(!table.columnExists("skillEndurance"))
@@ -58,26 +58,26 @@ public class SavingManager implements Listener{
 		//if(!table.columnExists("skillCraftsman"))
 		table.createColumn("skillCraftsman", ColumnType.INT);
 	}
-	public void removePlayer(Surviver surviver){
-		new SaveTask(surviver).run();
-		survivers.remove(surviver.getPlayer());
+	public void removePlayer(Survivor survivor){
+		new SaveTask(survivor).run();
+		survivors.remove(survivor.getPlayer());
 		
 	}
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e){
-		e.getPlayer().sendMessage("Loading surviver...");
+		e.getPlayer().sendMessage("Loading survivor...");
 		new LoadTask(e.getPlayer()).run();
-		e.getPlayer().sendMessage("Surviver loaded!");
+		e.getPlayer().sendMessage("survivor loaded!");
 	}
 	class LoadTask extends BukkitRunnable {
-		Surviver surviver;
+		Survivor survivor;
 		Player player;
 		
 		public LoadTask(Player player) {
 			this.player= player;
-			surviver = new Surviver(player);
-			Bukkit.broadcastMessage("Loading surviver " + surviver.getPlayer().getName());
-			survivers.put(player, surviver);
+			survivor = new Survivor(player);
+			Bukkit.broadcastMessage("Loading survivor " + survivor.getPlayer().getName());
+			survivors.put(player, survivor);
 		}
 
 		@Override
@@ -86,28 +86,27 @@ public class SavingManager implements Listener{
 			SQLEntry entry = table.createEntry(player.getUniqueId().toString());
 			player.setHealth(entry.getDouble("health"));
 			
-			surviver.setThirst(entry.getInt("thirst"));
-			surviver.setHunger(entry.getInt("hunger"));
-			surviver.setStamina(entry.getInt("stamina"));
+			survivor.setThirst(entry.getInt("thirst"));
+			survivor.setHunger(entry.getInt("hunger"));
+			survivor.setStamina(entry.getInt("stamina"));
 			
-			if(entry.getInt("bleeding") == 0) surviver.setBleeding(false); else surviver.setBleeding(true);
+			if(entry.getInt("bleeding") == 0) survivor.setBleeding(false); else survivor.setBleeding(true);
 			//set skill levels
-			surviver.setSkillSurvival(entry.getInt("skillSurvival"));
-			surviver.setSkillEndurance(entry.getInt("skillEndurance"));
-			surviver.setSkillSneakyBeaky(entry.getInt("skillSneakyBeaky"));
-			surviver.setSkillMarksman(entry.getInt("skillMarksman"));
-			surviver.setSkillWarrior(entry.getInt("skillWarrior"));
-			surviver.setSkillOutdoors(entry.getInt("skillOutdoors"));
-			surviver.setSkillCraftsman(entry.getInt("skillCraftsman"));
+			survivor.setSkillSurvival(entry.getInt("skillSurvival"));
+			survivor.setSkillEndurance(entry.getInt("skillEndurance"));
+			survivor.setSkillSneakyBeaky(entry.getInt("skillSneakyBeaky"));
+			survivor.setSkillMarksman(entry.getInt("skillMarksman"));
+			survivor.setSkillWarrior(entry.getInt("skillWarrior"));
+			survivor.setSkillOutdoors(entry.getInt("skillOutdoors"));
+			survivor.setSkillCraftsman(entry.getInt("skillCraftsman"));
 			
-			surviver.setPlayer(player);
+			survivor.setPlayer(player);
 			
 			//set the players inventory
-			entry.set("username", surviver.getPlayer().getName());
+			entry.set("username", survivor.getPlayer().getName());
 			if(exist){
+			Bukkit.broadcastMessage("entry exists!");
 			playersInvs.put(player, entry.getString("inventory"));
-			}else{
-				playersInvs.put(player, "");
 			}
 			
 
@@ -115,45 +114,46 @@ public class SavingManager implements Listener{
 		}
 }
 	class SaveTask extends BukkitRunnable {
-		Surviver surviver;
+		Survivor survivor;
 
-		public SaveTask(Surviver surviver) {
-			this.surviver = surviver;
-			Bukkit.getServer().getLogger().info("Saving surviver " + surviver.getPlayer().getName());
+		public SaveTask(Survivor survivor) {
+			this.survivor = survivor;
+			Bukkit.getServer().getLogger().info("Saving survivor " + survivor.getPlayer().getName());
 		}
 
 		@Override
 		public void run() {
 
-			SQLEntry entry = table.createEntry(surviver.getPlayer().getUniqueId().toString());
+			SQLEntry entry = table.createEntry(survivor.getPlayer().getUniqueId().toString());
 			//save properties
-			entry.set("username",surviver.getPlayer().getName());
-			entry.set("health",((Damageable) surviver.getPlayer()).getHealth());
-			entry.set("thirst", surviver.getThirst());
-			entry.set("hunger", surviver.getHunger());
-			entry.set("stamina",surviver.getStamina());
-			if(surviver.isBleeding())entry.set("bleeding", 1); else entry.set("bleeding", 0);
+			entry.set("username",survivor.getPlayer().getName());
+			entry.set("health",((Damageable) survivor.getPlayer()).getHealth());
+			entry.set("thirst", survivor.getThirst());
+			entry.set("hunger", survivor.getHunger());
+			entry.set("stamina",survivor.getStamina());
+			if(survivor.isBleeding())entry.set("bleeding", 1); else entry.set("bleeding", 0);
 			//save skills
-			entry.set("skillSurvival", surviver.getSkillSurvival());
-			entry.set("skillEndurance", surviver.getSkillEndurance());
-			entry.set("skillSneakyBeaky", surviver.getSkillSneakyBeaky());
-			entry.set("skillMarksman", surviver.getSkillMarksman());
-			entry.set("skillWarrior", surviver.getSkillWarrior());
-			entry.set("skillOutdoors", surviver.getSkillOutdoors());
-			entry.set("skillCraftsman", surviver.getSkillCraftsman());
+			entry.set("experience", survivor.getExperience());
+			entry.set("skillSurvival", survivor.getSkillSurvival());
+			entry.set("skillEndurance", survivor.getSkillEndurance());
+			entry.set("skillSneakyBeaky", survivor.getSkillSneakyBeaky());
+			entry.set("skillMarksman", survivor.getSkillMarksman());
+			entry.set("skillWarrior", survivor.getSkillWarrior());
+			entry.set("skillOutdoors", survivor.getSkillOutdoors());
+			entry.set("skillCraftsman", survivor.getSkillCraftsman());
 			
 			//save inventory
-			entry.set("inventory", InventorySerializer.serialize(surviver.getPlayer().getInventory()));
+			entry.set("inventory", InventorySerializer.serialize(survivor.getPlayer().getInventory()));
 			Bukkit.getServer().getLogger().info("saved");
 			
 			
 		}
 }
-	public HashMap<Player, Surviver> getSurvivers() {
-		return survivers;
+	public HashMap<Player, Survivor> getsurvivors() {
+		return survivors;
 	}
-	public void setSurvivers(HashMap<Player, Surviver> survivers) {
-		this.survivers = survivers;
+	public void setsurvivors(HashMap<Player, Survivor> survivors) {
+		this.survivors = survivors;
 	}
 	public HashMap<Player, String> getPlayersInvs() {
 		return playersInvs;
