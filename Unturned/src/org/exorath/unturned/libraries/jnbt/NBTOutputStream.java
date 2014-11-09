@@ -1,4 +1,5 @@
-package me.toon.vampirism.libraries.jnbt;
+package org.exorath.unturned.libraries.jnbt;
+
 
 import java.io.Closeable;
 import java.io.DataOutputStream;

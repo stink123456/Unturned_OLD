@@ -1,4 +1,4 @@
-package me.toon.vampirism.libraries.jnbt;
+package org.exorath.unturned.libraries.jnbt;
 
 import java.nio.charset.Charset;
 

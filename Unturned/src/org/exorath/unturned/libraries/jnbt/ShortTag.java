@@ -1,4 +1,6 @@
-package me.toon.vampirism.libraries.jnbt;
+package org.exorath.unturned.libraries.jnbt;
+
+
 
 /*
  * JNBT License
