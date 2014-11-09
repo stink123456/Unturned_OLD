@@ -20,13 +20,11 @@ import com.sucy.sql.SQLManager;
 
 public class SavingManager implements Listener{
 	private SQLTable table;
-	private Main main;
 	private HashMap<Player,Survivor> survivors= new HashMap<Player,Survivor>();
 	private HashMap<Player,String> playersInvs= new HashMap<Player,String>();
 	
-	public SavingManager(Main main) {
-		this.main=main;
-		table = SQLManager.getTable(main, "players");
+	public SavingManager() {
+		table = SQLManager.getTable(Main.getInstance(), "players");
 		//if(!table.columnExists("username"))
 		table.createColumn("username", ColumnType.STRING_32);
 		//if(!table.columnExists("health"))
