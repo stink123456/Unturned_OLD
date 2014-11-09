@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,12 +19,11 @@ import org.exorath.unturned.Survivors.Survivor;
 import org.exorath.unturned.libraries.InventorySerializer;
 
 public class LobbyManager implements Listener {
-	private Main main;
 	private boolean isStarted;
 	private List<Survivor> survivors = new ArrayList<Survivor>();
 
-	public LobbyManager(Main main) {
-		this.main = main;
+	public LobbyManager() {
+		
 	}
 
 	@EventHandler
@@ -35,6 +35,8 @@ public class LobbyManager implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent e) {
 		if (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_BLOCK) {
 			if (e.getClickedBlock().getType() == Material.SIGN || e.getClickedBlock().getType() == Material.SIGN_POST) {
+				Sign sign = (Sign)e.getClickedBlock().getState();
+				if(sign.getLine(0).equals("[Unturned]")){
 				if (survivors.contains(Main.getSavingManager().getsurvivors().get(e.getPlayer()))) {
 					e.getPlayer().sendMessage("You are already in the game.");
 				} else {
@@ -45,6 +47,7 @@ public class LobbyManager implements Listener {
 					}
 
 					addPlayer(e.getPlayer());
+				}
 				}
 			}
 		}
@@ -82,14 +85,6 @@ public class LobbyManager implements Listener {
 
 	public void setStarted(boolean isStarted) {
 		this.isStarted = isStarted;
-	}
-
-	public Main getMain() {
-		return main;
-	}
-
-	public void setMain(Main main) {
-		this.main = main;
 	}
 
 	public Survivor getsurvivor(Player p) {

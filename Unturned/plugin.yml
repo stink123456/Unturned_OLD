@@ -3,3 +3,7 @@ main: org.exorath.unturned.Main
 version: 1.0
 author: Toon Sevrin
 depend: [MCCore, SQLManager,Citizens]
+commands:
+  chest:
+    description: Unturned's chest commands
+    usage: /chest help

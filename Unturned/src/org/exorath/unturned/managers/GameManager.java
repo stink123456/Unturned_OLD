@@ -14,9 +14,7 @@ import com.rit.sucy.region.Sphere;
 
 @SuppressWarnings("deprecation")
 public class GameManager implements Listener {
-	public Main main;
-	public GameManager(Main main) {
-		this.main = main;
+	public GameManager() {
 		checkArea();
 	}
 	@EventHandler
@@ -40,7 +38,7 @@ public class GameManager implements Listener {
 
 	// TODO: too inefficient, crack brain for better efficiency
 	private void checkArea() {
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(main, new Runnable() {
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), new Runnable() {
 			@Override
 			public void run() {
 				for (SpawnArea area : Main.getSpawnManager().getSpawnAreas()) {

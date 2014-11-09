@@ -26,12 +26,17 @@ public class BuildingManager {
 	private static Calendar cal = Calendar.getInstance();
 
 	private static final String CANTPLACE = ChatColor.RED + "You can't place the building here. There are blocks in the way.";
-	public BuildingManager() throws IOException {
+	public BuildingManager() {
 		File folder = new File("schematics");
 
 		for (File file : folder.listFiles()) {
 			if (file.getName().endsWith(".schematic")) {
-				Schematic schem = Schematic.loadSchematic(file);
+				Schematic schem = null;
+				try {
+					schem = Schematic.loadSchematic(file);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				buildingSchematics.put(BuildingTypes.valueOf(file.getName().split(".schematic")[0]), schem);
 			}
 		}
